@@ -1,181 +1,219 @@
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdbool.h>
-
-//this is the node structure for list_node
-typedef struct list_node {
-	int data;
-	struct list_node *lptr;
-	struct list_node *rptr;
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdbool.h>
+typedef struct node{
+    int data;
+    struct node*left;
+    struct node*right;
 }node;
-
-node *insert_node(int value) {
-	node *new_node = (node *)malloc(sizeof(node));
-	new_node -> data = value;
-	new_node -> lptr = NULL;
-	new_node -> rptr = NULL;
-	return new_node;
-} 
-
-//B_insert is the algorithm for inserting in a bst tree 
-node *BINSERT(node *head,int value) {
-	
-	node *parent = NULL,*current = NULL;
-	if(head == NULL) {
-		node *new_node = insert_node(value);
-		return new_node;
-	}
-	else {
-		parent = head;
-		current = head;
-	}
-	
-	while(current != NULL) {
-		parent = current;
-		if(value < current -> data)
-			current = current -> lptr;
-		else if(value > current -> data)
-			current = current -> rptr;
-		else {
-			printf("No duplcicate key is allowed\n");
-			exit(0);
-		}
-	}
-	
-	node *new_node = insert_node(value);
-	
-	if(value < parent -> data) {
-		parent -> lptr = new_node;
-		//printf("Inserted at left of %d\n",parent -> data);
-	}
-	else {
-		parent -> rptr = new_node;
-		//printf("Inserted at right %d\n",parent -> data);
-	}
-		
-	return new_node;	
-
+node* get_new_node(int data)
+{
+    node* newnode=(node*)malloc(sizeof(node));
+    newnode->left=NULL;
+    newnode->right=NULL;
+    newnode->data=data;
+    return newnode;
 }
-
-node *BDELETE(node *head,int value) {
-	if(head == NULL) {
-		printf("Node %d is not found in the tree\n",value);
-		exit(0);
-	}
-	node *parent = head,*current = head;
-	char direction = 'l';
-	bool found = false; 
-	
-	while(!found && current != NULL) {
-		if(value < current -> data) {
-			parent = current;
-			current = current -> lptr;
-			direction = 'l';
-		}
-		else if(value > current -> data) {
-			parent = current;
-			current = current -> rptr;
-			direction = 'r';
-		}
-		else 
-			found = true;
-	}
-	
-	if(found == false) {
-		printf("Node %d is not found in the tree\n",value);
-		exit(0);
-	}
-	
-	node *temp = NULL,*suc = NULL,*pred = NULL;
-	
-	if(current -> lptr == NULL) 
-		temp = current -> rptr;
-	else if(current -> rptr == NULL)
-		temp = current -> lptr;
-	else {
-		suc = current -> rptr;
-		if(suc -> lptr == NULL) {
-			suc -> lptr = current -> lptr;
-			temp = suc;
-		}
-		else {
-			pred = current -> rptr;
-			suc = pred -> lptr;
-			while(suc -> lptr != NULL) {
-				pred = suc;
-				suc = pred -> lptr;
-			}
-			pred -> lptr = suc -> rptr;
-			suc -> lptr = current -> lptr;
-			suc -> rptr = current -> rptr;
-			temp = suc;
-		}
-	}
-	if(direction == 'l') {
-		if(value == head -> data)
-			head = temp;
-		parent -> lptr = temp;
-	}
-	else {
-		parent -> rptr = temp;
-	}
-	
-	return head;
-}
-
-
-void preorder(node **T) {
-    if(T == NULL) {
-        printf("Tree is empty\n");
-        return;
-    }
-    printf("%d ",(*T) -> data);
-    if((*T) -> lptr != NULL)
-        preorder(&((*T) -> lptr));
-    if((*T) -> rptr != NULL)
-        preorder(&((*T) -> rptr));
-    return;
-}
-
-void inorder(node **T) {
-    if(T == NULL) {
-        printf("Tree is empty\n");
-        return;
-    }
-    if((*T) -> lptr != NULL)
-        inorder(&((*T) -> lptr));
-    printf("%d ",(*T) -> data);
-    if((*T) -> rptr != NULL)
-        inorder(&((*T) -> rptr));
+void add_to_bst(node **head,int data)
+{
     
-    return;
+    if(*head==NULL)
+    {
+        node *temp=get_new_node(data);
+        *head=temp;
+        // printf("%d ",(*head)->data);
+    }
+    else
+    {
+        if(data<(*head)->data)
+        {
+            add_to_bst(&(*head)->left,data);
+        }
+        else
+        {
+            add_to_bst(&(*head)->right,data);
+        }
+        
+    }
+    
+}
+node *prev=NULL;
+node* search(node **head,node **baap,int data,int call)
+{
+    
+    node *tmp_head=*head;
+    if(tmp_head==NULL)
+    {
+
+        prev=NULL;
+        return NULL; 
+    }
+    else if(tmp_head->data==data)
+    {
+        // printf("%p ",tmp_head);
+        if(call==0)
+        {
+            prev=NULL;
+        }
+        else
+        {
+            prev=*baap;
+        }
+        // printf("%p ",tmp_head);
+        return tmp_head;
+    }
+    else if(tmp_head->data>data)
+    {
+        tmp_head=search(&(tmp_head->left),head,data,call+1);
+    }
+    else if(tmp_head->data<data)
+    {
+        tmp_head=search(&(tmp_head->right),head,data,call+1);
+    }
+}
+void inorder(node **head)
+{
+    node *tmp=*head;
+    if(tmp->left!=NULL)
+    {
+        inorder(&(tmp->left));
+    }
+    printf("%d ",tmp->data);
+    if(tmp->right!=NULL)
+    {
+        inorder(&(tmp->right));
+    }
+}
+void preorder(node **head)
+{
+    node* tmp=*head;
+    printf("%d ",tmp->data);
+    if(tmp->left!=NULL)
+    {
+        preorder(&(tmp->left));
+    }
+    if(tmp->right!=NULL)
+    {
+        preorder(&(tmp->right));
+    }
+    
 }
 
+int find_min_in_right(node **head,node **prev_ptr)
+{
+       
+    if((*head)->left==NULL)
+    {
+        
+        return (*head)->data;
+    }
+    else
+    {
+        find_min_in_right(&(*head)->left,head);
+    }
+    
+    
+}
+void delete(node **head,int data)
+{
+    node *tmp=search(head,NULL,data,0);
+    node *father=prev;
+    // printf("\n \n \n%d %d\n",tmp->data,father->data);
+    if(tmp==NULL)
+    {
+        printf("Node %d is not found in the tree",data);
+        exit(0);
+    }
+    else if(tmp->left!=NULL && tmp->right==NULL)
+    {
+        // printf("onechild");
+        tmp->data=(tmp->left)->data;
+        tmp->left=(tmp->left)->left;
+        
+    }
+    else if(tmp->right!=NULL && tmp->left==NULL)
+    {
+        printf("lonechild");
+        tmp->data=(tmp->right)->data;
+        tmp->right=(tmp->right)->right;
+        
+    }
+    else if(tmp->right==NULL && tmp->left==NULL)
+    {
+        // printf("leaf node");
+        if(father->left==tmp)
+        {
+            //confirm left child
+            father->left=tmp->left;
+        }    
+        else
+        {
+            //confirm right child
+            father->right=tmp->right;
+        }
+        
+        
+    }
+    else
+    {
+        int ret=find_min_in_right(&(tmp->right),NULL);
+        // printf("returned");
+        node *search_node=search(head,NULL,ret,1);
+        
+        // printf("%p ",search_node);
+        node *search_father=prev;
+        if(tmp->right==search_node)
+        {
+            tmp->data=search_node->data;
+            tmp->right=search_node->right;
+        }
+        else if(search_node->right!=NULL)
+        {
+            search_father->left=search_node->right;
+            tmp->data=search_node->data;
+        }
+        else
+        {
+            search_father->left=NULL;
+            tmp->data=search_node->data;
+        }
+        
+        
+    }
+    
+    
+}
 
-int main() {
-	int n,m,i,value;
-	node *head = NULL; 
-	
-	scanf("%d",&n);
-	scanf("%d",&value);
-	head = BINSERT(head,value);
-	
-	for(i=1;i<n;i++) {
-		scanf("%d",&value);
-		BINSERT(head,value);
-	}    
-	
-	scanf("%d",&m);
-	for(i=0;i<m;i++) {
-		scanf("%d",&value);
-		head = BDELETE(head,value);
-	}
-	
-	inorder(&head);
-	printf("\n");
-	preorder(&head);
-	
-    return 0;
+int main()
+{
+    node *head=(node*)malloc(sizeof(node));
+    head=NULL;
+    
+    int no;
+    scanf("%d",&no);
+    for (int i = 0; i < no; i++)
+    {
+        int temp;
+        scanf("%d",&temp);
+        add_to_bst(&head,temp);
+    }
+    // inorder(&head);
+    int ask_no;
+    scanf("%d",&ask_no);
+    for(int i=0;i<ask_no;i++)
+    {
+        int ask;
+        scanf("%d",&ask);
+        delete(&head,ask);
+        // inorder(&head);
+        
+    }
+    
+    inorder(&head);
+    printf("\n");
+    preorder(&head);
+
+    // delete(&head,ask);
+    // inorder(&head);
+    //print(&head);
 }
