@@ -1,3 +1,9 @@
+/*
+CREATED by Gandevia keval
+MOTTO:
+Work before burgers!!!
+Date:30/09/2020
+*/
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
