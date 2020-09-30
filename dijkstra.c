@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #define INT_MAX 10000000
 
+
+//here we will find the minimum distance from the given set of nodes
 int min_distance(int distance[],bool set[],int n) {
     int min = INT_MAX,index_min,i;
     for(i=0;i<n;i++) {
