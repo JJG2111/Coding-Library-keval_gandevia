@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
+//this is the node structure for list_node
 typedef struct list_node {
 	int data;
 	struct list_node *lptr;
@@ -19,7 +19,7 @@ node *insert_node(int value) {
 	return new_node;
 } 
 
-
+//B_insert is the algorithm for inserting in a bst tree 
 node *BINSERT(node *head,int value) {
 	
 	node *parent = NULL,*current = NULL;
